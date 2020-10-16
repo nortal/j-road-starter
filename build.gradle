@@ -1,0 +1,81 @@
+ext {
+  jarVersion = "1.0.0"
+  jarGroup = "com.nortal.jroad.starter"
+}
+
+subprojects {
+  apply plugin: "java"
+  apply plugin: "maven-publish"
+
+  compileJava { options.encoding = "UTF-8" }
+  sourceCompatibility = 11
+  targetCompatibility = 11
+
+  jar {
+    manifest {
+      attributes(
+        "Group": rootProject.jarGroup,
+        "Name": project.name,
+        "Implementation-Title": "Gradle",
+        "Implementation-Version": rootProject.jarVersion,
+        "Build-Date": new Date().format('yyyy.MM.dd HH:mm:ss')
+      )
+    }
+  }
+
+  repositories {
+    maven { url "https://repo.maven.apache.org/maven2/" }
+    maven { url "https://plugins.gradle.org/m2/" }
+  }
+
+  test {
+    useJUnitPlatform()
+    reports.junitXml.destination = file('build/test-results')
+    testLogging {
+      events = ["passed", "skipped", "failed"]
+      exceptionFormat "full"
+    }
+  }
+
+  task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+  }
+
+  publishing {
+    publications {
+      mavenJava(MavenPublication) {
+        groupId = rootProject.jarGroup
+        from components.java
+
+        artifact sourceJar {
+          classifier "sources"
+        }
+      }
+    }
+    repositories {
+      maven {
+        credentials {
+          username "${project.properties.repoUsername}"
+          password "${project.properties.repoPassword}"
+        }
+        if (project.version.endsWith('-SNAPSHOT')) {
+          url "${project.properties.repoSnapshotsRepository}"
+        } else {
+          url "${project.properties.repoReleasesRepository}"
+        }
+      }
+    }
+  }
+
+  dependencies {
+    compile 'com.sun.xml.ws:jaxws-ri:2.3.2'
+    compile "com.sun.xml.bind:jaxb-core:2.3.0"
+    compile "com.sun.xml.bind:jaxb-impl:2.3.0"
+    compile "javax.xml.bind:jaxb-api:2.3.0"
+    compile "org.springframework.ws:spring-ws-core:3.0.10.RELEASE"
+    compile "org.apache.commons:commons-lang3:3.11"
+    compile "org.slf4j:slf4j-api:1.7.25"
+    compileOnly "com.google.code.findbugs:annotations:3.0.1"
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+  }
+}

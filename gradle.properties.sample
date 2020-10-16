@@ -1,0 +1,4 @@
+repoSnapshotsRepository={your_repo_url__for_snapshots}
+repoReleasesRepository={your_repo_url__for_releases}
+repoUsername={your_repo_username}
+repoPassword={your_repo_password}
