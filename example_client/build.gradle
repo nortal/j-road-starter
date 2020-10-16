@@ -1,0 +1,37 @@
+configurations {
+  jaxws
+}
+
+dependencies {
+  compile project(":j-road-client")
+  jaxws "com.sun.xml.ws:jaxws-tools:2.3.2"
+  jaxws "com.sun.xml.bind:jaxb-impl:2.3.2"
+}
+
+/**
+ * Run Gradle with "-PgenWsdlClasses" to regenerate WSDL/XSDs into Java classes.
+ **/
+task genJaxwsFiles {
+  if (project.hasProperty("genWsdlClasses")) {
+    delete fileTree("$projectDir/src/main/java/com/nortal/jroad/starter/client/example/jvis/generated") {
+      include "**/*.java"
+    }
+    ant.taskdef(name: 'wsimport', classname: 'com.sun.tools.ws.ant.WsImport', classpath: configurations.jaxws.asPath)
+    ant.wsimport(
+        sourcedestdir: "$projectDir/src/main/java",
+        package: "com.nortal.jroad.starter.client.example.jvis.generated",
+        wsdl: "$projectDir/src/main/resources/wsdl/jvis.wsdl",
+        // find out, is there a way to have "CrsQualifications_Service.class.getClassLoader().getResource"
+        // in generated CrsQualifications_Service. Then wsdlLocation can be just "wsdl/jvis.wsdl"
+        wsdlLocation: "../../../../../../../wsdl/jvis.wsdl",
+        keep: true,
+        extension: true,
+        verbose: true,
+        quiet: false,
+        xendorsed: true,
+        xnocompile: true
+    ) {
+      xjcarg(value: "-XautoNameResolution")
+    }
+  }
+}
