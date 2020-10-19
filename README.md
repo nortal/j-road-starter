@@ -12,7 +12,8 @@ help you do that. These work should be done before you use project's libs. Read 
 [here](https://www.ria.ee/en/state-information-system/x-tee.html).
 
 ##What does this project do?
-It has two Java-libraries: client and server.
+It has two Java-libraries: client and server, where you control everything (including 
+marshalling and unmarshalling).
 
 Client lib provides the way to consume other services. It has simple Configuration 
 class and simple Service class base. See example of it's usage in "example_client"

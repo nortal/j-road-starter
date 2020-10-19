@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxws:bindings wsdlLocation="laak.wsdl"
+                xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+                xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+                xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <jaxws:bindings node="wsdl:definitions/wsdl:types/xs:schema">
+    <jxb:globalBindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <jxb:javaType xmlType="xs:dateTime"
+                    name="javax.xml.datatype.XMLGregorianCalendar"
+                    parseMethod="com.nortal.jroad.starter.server.example.bindings.BindingUtil.toXmlGregorianCalendarWithTime"/>
+      <jxb:javaType xmlType="xs:date"
+                    name="javax.xml.datatype.XMLGregorianCalendar"
+                    parseMethod="com.nortal.jroad.starter.server.example.bindings.BindingUtil.toXmlGregorianCalendar"/>
+      <jxb:javaType xmlType="xs:decimal"
+                    name="java.math.BigDecimal"
+                    parseMethod="com.nortal.jroad.starter.server.example.bindings.BindingUtil.toBigDecimal"/>
+    </jxb:globalBindings>
+  </jaxws:bindings>
+</jaxws:bindings>

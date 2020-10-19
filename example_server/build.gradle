@@ -1,0 +1,35 @@
+configurations {
+  jaxws
+}
+
+dependencies {
+  compile project(":j-road-server")
+  jaxws "com.sun.xml.ws:jaxws-tools:2.3.2"
+  jaxws "com.sun.xml.bind:jaxb-impl:2.3.2"
+}
+
+/**
+ * Run Gradle with "-PgenWsdlClasses" to regenerate WSDL/XSDs into Java classes.
+ **/
+task genJaxwsFiles {
+  if (project.hasProperty("genWsdlClasses")) {
+    delete fileTree("$projectDir/src/main/java/com/nortal/jroad/starter/server/example/generated") {
+      include "**/*.java"
+    }
+    ant.taskdef(name: 'wsimport', classname: 'com.sun.tools.ws.ant.WsImport', classpath: configurations.jaxws.asPath)
+    ant.wsimport(
+        sourcedestdir: "$projectDir/src/main/java",
+        package: "com.nortal.jroad.starter.server.example.generated",
+        wsdl: "$projectDir/src/main/resources/wsdl/example-server.wsdl",
+        wsdlLocation: "../../../../../../../wsdl/example-server.wsdl",
+        keep: true,
+        extension: true,
+        verbose: true,
+        quiet: false,
+        xendorsed: true,
+        xnocompile: true
+    ) {
+      xjcarg(value: "-XautoNameResolution")
+    }
+  }
+}

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:tns="http://server-example.x-road.eu"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:xrd="http://x-road.eu/xsd/xroad.xsd"
+             xmlns:repr="http://x-road.eu/xsd/representation.xsd"
+             targetNamespace="http://server-example.x-road.eu"
+             name="server-example">
+  <message name="sendData">
+    <part name="body" element="tns:sendData"/>
+  </message>
+
+  <message name="sendDataResponse">
+    <part name="body" element="tns:sendDataResponse"/>
+  </message>
+
+  <message name="xrdHeader">
+    <part element="xrd:id" name="id"/>
+    <part element="xrd:protocolVersion" name="protocolVersion"/>
+    <part element="xrd:issue" name="issue"/>
+    <part element="xrd:service" name="service"/>
+    <part element="xrd:client" name="client"/>
+    <part element="xrd:userId" name="userId"/>
+    <part element="repr:representedParty" name="representedParty"/>
+  </message>
+
+  <portType name="ServerExampleV6WebService">
+    <operation name="sendData">
+      <documentation>
+        <xrd:title>Example server data transfer service</xrd:title>
+      </documentation>
+      <input message="tns:sendData"/>
+      <output message="tns:sendDataResponse"/>
+    </operation>
+  </portType>
+
+  <binding name="ServerExamplePortBinding" type="tns:ServerExampleV6WebService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+    <operation name="sendData">
+      <xrd:version>v1</xrd:version>
+
+      <input>
+        <soap:body parts="body" use="literal"/>
+        <soap:header message="tns:xrdHeader" part="id" use="literal"/>
+        <soap:header message="tns:xrdHeader" part="protocolVersion" use="literal"/>
+        <soap:header message="tns:xrdHeader" part="service" use="literal"/>
+        <soap:header message="tns:xrdHeader" part="client" use="literal"/>
+        <soap:header message="tns:xrdHeader" part="userId" use="literal"/>
+        <soap:header message="tns:xrdHeader" part="representedParty" use="literal"/>
+      </input>
+
+      <output>
+        <soap:body parts="body" use="literal"/>
+        <soap:header message="tns:xrdHeader" part="id" use="literal"/>
+        <soap:header message="tns:xrdHeader" part="protocolVersion" use="literal"/>
+        <soap:header message="tns:xrdHeader" part="service" use="literal"/>
+        <soap:header message="tns:xrdHeader" part="client" use="literal"/>
+        <soap:header message="tns:xrdHeader" part="userId" use="literal"/>
+        <soap:header message="tns:xrdHeader" part="representedParty" use="literal"/>
+      </output>
+
+    </operation>
+  </binding>
+
+  <service name="ServerExampleV6">
+    <port name="ServerExampleV6WebServiceImpl" binding="tns:ServerExamplePortBinding">
+      <soap:address location="http://TURVASERVER/cgi-bin/consumer_proxy/"/>
+      <xrd:title>Example server X-tee v6 services</xrd:title>
+      <xrd:address producer="server-example"/>
+    </port>
+  </service>
+
+  <types>
+    <schema targetNamespace="http://server-example.x-road.eu"
+            xmlns="http://www.w3.org/2001/XMLSchema"
+            xmlns:tns="http://server-example.x-road.eu"
+            xmlns:xrd="http://x-road.eu/xsd/xroad.xsd">
+      <element name="sendData">
+        <complexType>
+          <sequence>
+            <element name="request" type="tns:SendDataRequestType"/>
+          </sequence>
+        </complexType>
+      </element>
+
+      <element name="sendDataResponse">
+        <complexType>
+          <sequence>
+            <element name="response" type="tns:SendDataResponseType"/>
+          </sequence>
+        </complexType>
+      </element>
+
+      <complexType name="SendDataRequestType">
+        <sequence>
+          <element name="items" type="tns:SendDataRequestItems" />
+        </sequence>
+      </complexType>
+
+      <complexType name="SendDataRequestItems">
+        <sequence>
+          <element name="item" type="tns:SendDataRequestItem" maxOccurs="100"/>
+        </sequence>
+      </complexType>
+
+      <complexType name="SendDataRequestItem">
+        <sequence>
+          <element name="itemCode" type="string"/>
+          <element name="itemDate" type="dateTime"/>
+        </sequence>
+      </complexType>
+
+      <complexType name="SendDataResponseType">
+        <sequence>
+          <element name="statusCode" type="string"/>
+        </sequence>
+      </complexType>
+    </schema>
+  </types>
+</definitions>
