@@ -17,15 +17,9 @@ public class XroadEndpointMapping extends AbstractXroadEndpointMapping {
 
   @Nonnull
   @Override
-  protected String getDatabaseCode() {
-    return "exampleserver";
-  }
-
-  @Nonnull
-  @Override
   protected Map<XroadEndpointMappingKey, AbstractXroadV4BaseEndpoint> getRegisteredEndpoints() {
     Map<XroadEndpointMappingKey, AbstractXroadV4BaseEndpoint> result = new HashMap<>();
-    result.put(new XroadEndpointMappingKey(getDatabaseCode(), "sendData", "v1"), sendDataEndpoint);
+    result.put(new XroadEndpointMappingKey("exampleserver", "sendData", "v1"), sendDataEndpoint);
     return result;
   }
 }

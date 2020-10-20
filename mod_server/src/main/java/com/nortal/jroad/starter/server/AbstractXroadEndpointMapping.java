@@ -21,9 +21,6 @@ public abstract class AbstractXroadEndpointMapping extends AbstractEndpointMappi
   private final Map<String, AbstractXroadV4BaseEndpoint> endpoints = new HashMap<>();
 
   @Nonnull
-  protected abstract String getDatabaseCode();
-
-  @Nonnull
   protected abstract Map<XroadEndpointMappingKey, AbstractXroadV4BaseEndpoint> getRegisteredEndpoints();
 
   @Override
@@ -42,7 +39,6 @@ public abstract class AbstractXroadEndpointMapping extends AbstractEndpointMappi
   @Nonnull
   protected XroadEndpointMappingKey getEndpointKey(SOAPHeader header) {
     XroadEndpointMappingKey result = new XroadEndpointMappingKey();
-    result.setDatabaseCode(getDatabaseCode());
 
     if (header == null) {
       return result;
@@ -52,6 +48,9 @@ public abstract class AbstractXroadEndpointMapping extends AbstractEndpointMappi
     if (service == null) {
       return result;
     }
+
+    String subsystemCode = SoapUtil.getNsElementValue(service, HEADER__SUBSYSTEM_CODE, NS_IDEN_URI);
+    result.setSubsystemCode(subsystemCode);
 
     String serviceCode = SoapUtil.getNsElementValue(service, HEADER__SERVICE_CODE, NS_IDEN_URI);
     result.setServiceCode(serviceCode);
