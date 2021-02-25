@@ -1,11 +1,17 @@
 ext {
-  jarVersion = "1.0.0"
+  jarVersion = "0.1.0"
   jarGroup = "com.nortal.jroad.starter"
+}
+
+allprojects {
+  group 'com.nortal.jroad.starter'
+  version '0.1.0'
 }
 
 subprojects {
   apply plugin: "java"
   apply plugin: "maven-publish"
+  apply plugin: 'signing'
 
   compileJava { options.encoding = "UTF-8" }
   sourceCompatibility = 11
@@ -38,17 +44,67 @@ subprojects {
   }
 
   task sourceJar(type: Jar) {
-    from sourceSets.main.allSource
+    classifier "sources"
+    from sourceSets.main.allJava
+  }
+
+  task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier "javadoc"
+    from javadoc.destinationDir
+  }
+
+  tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+  }
+
+  artifacts {
+    archives jar
+    archives sourceJar
+    archives javadocJar
+  }
+
+  signing {
+    sign configurations.archives
   }
 
   publishing {
     publications {
       mavenJava(MavenPublication) {
+        customizePom(pom)
         groupId = rootProject.jarGroup
+        version rootProject.jarVersion
+
         from components.java
 
-        artifact sourceJar {
-          classifier "sources"
+        // create the sign pom artifact
+        pom.withXml {
+            def pomFile = file("${project.buildDir}/generated-pom-${project.name}.xml")
+            writeTo(pomFile)
+            def pomAscFile = signing.sign(pomFile).signatureFiles[0]
+            artifact(pomAscFile) {
+                classifier = null
+                extension = 'pom.asc'
+            }
+        }
+
+        artifact (sourceJar) {
+          classifier = 'sources'
+        }
+        artifact(javadocJar) {
+          classifier = 'javadoc'
+        }
+
+        // create the signed artifacts
+        project.tasks.signArchives.signatureFiles.each {
+            artifact(it) {
+                def matcher = it.file =~ /-(sources|javadoc)\.jar\.asc$/
+                if (matcher.find()) {
+                    classifier = matcher.group(1)
+                } else {
+                    classifier = null
+                }
+                extension = 'jar.asc'
+            }
         }
       }
     }
@@ -68,10 +124,12 @@ subprojects {
   }
 
   dependencies {
-    compile 'com.sun.xml.ws:jaxws-ri:2.3.2'
-    compile "com.sun.xml.bind:jaxb-core:2.3.0"
-    compile "com.sun.xml.bind:jaxb-impl:2.3.0"
-    compile "javax.xml.bind:jaxb-api:2.3.0"
+    compile("com.sun.xml.ws:jaxws-ri:2.3.2@pom") {
+      transitive = true
+    }
+    compile "com.sun.xml.bind:jaxb-core:2.3.0.1"
+    compile "com.sun.xml.bind:jaxb-impl:2.3.0.1"
+    compile "javax.xml.bind:jaxb-api:2.3.1"
     compile "org.springframework.ws:spring-ws-core:3.0.10.RELEASE"
     compile "org.apache.commons:commons-lang3:3.11"
     compile "org.slf4j:slf4j-api:1.7.25"
@@ -79,3 +137,64 @@ subprojects {
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
   }
 }
+def customizePom(pom) {
+  pom.withXml {
+    def root = asNode()
+
+    // eliminate test-scoped dependencies (no need in maven central POMs)
+    root.dependencies.removeAll { dep ->
+      dep.scope == "test"
+    }
+
+    // add all items necessary for maven central publication
+    root.children().last() + {
+      resolveStrategy = Closure.DELEGATE_FIRST
+
+      description 'Consume and develop x-rad services'
+      name 'J-road Starter'
+      url 'https://github.com/nortal/j-road-starter'
+      organization {
+        name 'com.nortal'
+        url 'https://github.com/nortal/j-road-starter'
+      }
+      issueManagement {
+        system 'GitHub'
+        url 'https://github.com/nortal/j-road-starter/issues'
+      }
+      licenses {
+        license {
+          name 'Apache License 2.0'
+          url 'https://github.com/nortal/j-road-starter/blob/main/LICENSE'
+          distribution 'repo'
+        }
+      }
+      scm {
+        url 'https://github.com/nortal/j-road-starter'
+        connection 'scm:git:git://github.com/nortal/j-road-starter.git'
+        developerConnection 'scm:git:ssh://git@github.com:nortal/j-road-starter.git'
+      }
+      developers {
+        developer {
+          name 'Anton Stalnuhhin'
+        }
+        developer {
+          name 'Juhan Aasaru'
+        }
+      }
+    }
+  }
+}
+model {
+  tasks.generatePomFileForMavenJavaPublication {
+    destination = file("$buildDir/generated-pom.xml")
+  }
+  tasks.publishMavenJavaPublicationToMavenLocal {
+    dependsOn project.tasks.signArchives
+  }
+  tasks.publishMavenJavaPublicationToMavenRepository {
+    dependsOn project.tasks.signArchives
+  }
+
+}
+
+

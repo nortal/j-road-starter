@@ -3,6 +3,28 @@ This project is not related to [nortal/j-road](https://github.com/nortal/j-road)
 It is simple alternative, that doesn't keep any generated sources. You will also 
 need to generate necessary classes in your project. Check out examples.
 
+## How to use it
+
+### If you need to call some other x-road service
+
+```
+    <dependency>
+      <groupId>com.nortal.jroad.starter</groupId>
+      <artifactId>j-road-client</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+```
+
+### If you need to provide an x-road service
+
+```
+    <dependency>
+      <groupId>com.nortal.jroad.starter</groupId>
+      <artifactId>j-road-server</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+```
+
 ##How X-Road works?
 X-Road is the way to securely exchange the data between e-Country services. The base 
 idea is that you have security servers at both points. So if you need to test service
@@ -63,3 +85,95 @@ task genJaxwsFiles {
   }
 }
 ```
+
+
+
+## Publishing new version to Maven Central
+These instructions are needed only for developers and maintainers of this repository.
+
+### First-time actions
+
+
+#### Create yourself a user in Sonatype repo
+
+https://oss.sonatype.org/
+
+#### Get access rights to publish to Maven Central
+
+You need to create a JIRA ticket and find someone who already has access to (com.nortal) to approve.
+Then you need to wait for the rights to be added to your user.
+
+#### Generate yourself a GPG key
+
+```gpg --gen-key```
+
+You get the ID as output. Something like this: FA074FD8AD325C5E16447B587D5B9A643F9CA057
+In next commands you need 8 last digits of it: 3F9CA057
+And also pick a password that you need later. We use 'myPassword' here
+
+#### Export the secret
+```gpg --keyring secring.gpg --export-secret-keys 3F9CA057 > ~/.gnupg/secring.gpg```
+
+#### Set the values in
+
+Use file gradle.properties.sample to create your own version of gradle.properties
+
+
+### Actions on every release
+
+#### Set correct version
+Edit build.gradle
+
+#### New release in GitHub
+
+Tag a new version in GitHub
+And then perform a clean clone and checkout on it (to be sure you are a correct tag and that you have no uncommitted changes).
+
+Avoid creating a relase on working directory (as you might depend on files not committed to VCS)
+
+
+#### Test signing works
+
+This build has to pass:
+```gradle sign -Psigning.secretKeyRingFile=/Users/me/.gnupg/secring.gpg -Psigning.password=myPassword -Psigning.keyId=3F9CA057```
+
+#### You now need to publish your public key
+
+```gpg --keyserver hkp://pool.sks-keyservers.net --send-keys 3F9CA057```
+
+#### Test key is published
+
+```gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 3F9CA057```
+
+#### Test publishing by publishing to your own Maven Local (~/.m2/repostitory)
+
+```gradle clean sign publishToMavenLocal```
+
+#### Build and publish the artifact
+
+```gradle clean sign publish -Psigning.secretKeyRingFile=/Users/me/.gnupg/secring.gpg -Psigning.password=myPassword -Psigning.keyId=3F9CA057```
+
+
+#### Log into staging repository
+
+https://oss.sonatype.org/
+
+Click "close".
+
+In case there are any errors you need to solve them before proceeding.
+
+#### Test the update
+
+For every item you need to define a staging repository in dependent component:
+
+```
+    <repository>
+      <id>stagingJroadStarter</id>
+      <name>Maven Central Staging</name>
+      <url>https://oss.sonatype.org/content/repositories/comnortaljroad-1056/</url>
+    </repository>
+```
+
+Clean build the dependent project to test.
+Remove from local repository every time you switch to new one.
+
