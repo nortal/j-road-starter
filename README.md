@@ -11,7 +11,7 @@ need to generate necessary classes in your project. Check out examples.
     <dependency>
       <groupId>com.nortal.jroad.starter</groupId>
       <artifactId>j-road-client</artifactId>
-      <version>0.1.0</version>
+      <version>0.3.0</version>
     </dependency>
 ```
 
@@ -21,7 +21,7 @@ need to generate necessary classes in your project. Check out examples.
     <dependency>
       <groupId>com.nortal.jroad.starter</groupId>
       <artifactId>j-road-server</artifactId>
-      <version>0.1.0</version>
+      <version>0.3.0</version>
     </dependency>
 ```
 
@@ -128,6 +128,9 @@ Edit build.gradle
 
 Tag a new version in GitHub
 And then perform a clean clone and checkout on it (to be sure you are a correct tag and that you have no uncommitted changes).
+
+git clone https://github.com/nortal/j-road-starter.git --branch 0.3.0
+
 
 Avoid creating a relase on working directory (as you might depend on files not committed to VCS)
 
