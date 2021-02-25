@@ -1,11 +1,11 @@
 ext {
-  jarVersion = "0.1.0"
+  jarVersion = "0.3.0"
   jarGroup = "com.nortal.jroad.starter"
 }
 
 allprojects {
   group 'com.nortal.jroad.starter'
-  version '0.1.0'
+  version '0.3.0'
 }
 
 subprojects {
