@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.ws.server.EndpointAdapter;
+import org.springframework.ws.server.endpoint.adapter.MessageEndpointAdapter;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition;
 import org.springframework.ws.wsdl.wsdl11.Wsdl11Definition;
@@ -24,5 +26,10 @@ public class ExampleXroadWebServiceServletConfig {
   @Bean
   public Wsdl11Definition laak() {
     return new SimpleWsdl11Definition(new ClassPathResource("wsdl/example-server.wsdl"));
+  }
+
+  @Bean
+  public EndpointAdapter messageEndpointAdapter() {
+    return new MessageEndpointAdapter();
   }
 }

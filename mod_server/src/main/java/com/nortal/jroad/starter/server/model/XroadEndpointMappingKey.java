@@ -8,7 +8,7 @@ import java.util.Objects;
 public class XroadEndpointMappingKey implements Serializable {
   private static final long serialVersionUID = -7714795069322529947L;
 
-  private String databaseCode;
+  private String subsystemCode;
   private String serviceCode;
   private String serviceVersion = XroadV4Constant.SERVICE_VERSION__V1;
 
@@ -16,22 +16,22 @@ public class XroadEndpointMappingKey implements Serializable {
     // empty constructor
   }
 
-  public XroadEndpointMappingKey(String databaseCode, String serviceCode, String serviceVersion) {
-    this.databaseCode = databaseCode;
+  public XroadEndpointMappingKey(String subsystemCode, String serviceCode, String serviceVersion) {
+    this.subsystemCode = subsystemCode;
     this.serviceCode = serviceCode;
     this.serviceVersion = serviceVersion;
   }
 
   public String getMappingKey() {
-    return databaseCode + "." + serviceCode + "." + serviceVersion;
+    return subsystemCode + "." + serviceCode + "." + serviceVersion;
   }
 
-  public String getDatabaseCode() {
-    return databaseCode;
+  public String getSubsystemCode() {
+    return subsystemCode;
   }
 
-  public void setDatabaseCode(String databaseCode) {
-    this.databaseCode = databaseCode;
+  public void setSubsystemCode(String subsystemCode) {
+    this.subsystemCode = subsystemCode;
   }
 
   public String getServiceCode() {
@@ -59,20 +59,20 @@ public class XroadEndpointMappingKey implements Serializable {
       return false;
     }
     XroadEndpointMappingKey that = (XroadEndpointMappingKey) o;
-    return Objects.equals(getDatabaseCode(), that.getDatabaseCode()) &&
+    return Objects.equals(getSubsystemCode(), that.getSubsystemCode()) &&
       Objects.equals(getServiceCode(), that.getServiceCode()) &&
       Objects.equals(getServiceVersion(), that.getServiceVersion());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getDatabaseCode(), getServiceCode(), getServiceVersion());
+    return Objects.hash(getSubsystemCode(), getServiceCode(), getServiceVersion());
   }
 
   @Override
   public String toString() {
     return "XroadEndpointMappingKey{" +
-      "databaseCode='" + databaseCode + '\'' +
+      "subsystemCode='" + subsystemCode + '\'' +
       ", serviceCode='" + serviceCode + '\'' +
       ", serviceVersion='" + serviceVersion + '\'' +
       '}';
